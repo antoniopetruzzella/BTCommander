@@ -1,5 +1,7 @@
 {
   "name": "BTCommander",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }
