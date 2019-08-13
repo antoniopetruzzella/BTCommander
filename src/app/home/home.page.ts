@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import {BluetoothSerial} from '@ionic-native/bluetooth-serial/ngx';
 import {AlertController,ToastController} from '@ionic/angular'
-import { timingSafeEqual } from 'crypto';
-import { testUserAgent } from '@ionic/core/dist/types/utils/platform';
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -12,8 +11,10 @@ export class HomePage {
 
   listToggle:boolean=false;
   listaPairedDevices:PairedList;
+  listaUnPairedDevices:PairedList;
   pairedDeviceId:number=0;
-  command:string="";
+  
+  //BLUETOOTHSERIAL VEDE DISPOSITIVI GIA' BOUNDED!!!!!
 
   constructor(private bluetoothserial:BluetoothSerial, private alertCtrl:AlertController, private toastController:ToastController) {
 
@@ -25,6 +26,7 @@ export class HomePage {
     this.bluetoothserial.isEnabled().then(success=>{
 
       this.listPairedDevices();
+      this.listUnpairedDevices();
 
 
     }, error=>{
@@ -35,13 +37,14 @@ export class HomePage {
   }
 
   listPairedDevices(){
-
+    console.log("inizio scansione")
     this.bluetoothserial.list().then(lista=>{
     
       this.listaPairedDevices=lista;
       this.listToggle=true;
 
     }, errore=>{
+      console.log("errore")
       this.showError("BLUETOOTH NON ABILITATO");
       this.listToggle=false;
     })
@@ -49,10 +52,23 @@ export class HomePage {
     
 
   }
+  listUnpairedDevices(){
+    console.log("inizio scansione unpaired")
+    this.bluetoothserial.discoverUnpaired().then(lista=>{
+    
+      this.listaUnPairedDevices=lista;
+      this.listToggle=true;
 
-  selectDevice(){
-  
-    let connectedDevice=this.listaPairedDevices[this.pairedDeviceId]
+    }, errore=>{
+      console.log("errore")
+      this.showError("BLUETOOTH NON ABILITATO");
+      this.listToggle=false;
+    })
+  }
+
+  selectDevice(connectedDevice){
+    //this.pairedDeviceId=pairedDeviceId;
+    //let connectedDevice=this.listaPairedDevices[this.pairedDeviceId]
     if(!connectedDevice.address){
       this.showError("devi scegliere un device!");
       return;
@@ -85,23 +101,36 @@ export class HomePage {
 
   }
 
-  sendCommand(){
+  sendCommand(command){
 
-    this.command+='\n';
-    this.showToast(this.command);
-    this.bluetoothserial.write(this.command).then(success=>{
+    command+='\n';
+    this.showToast(command);
+    this.bluetoothserial.write(command).then(success=>{
       this.showToast(success);
     }, error=>{
       this.showError(error);
     })
   }
-  showToast(messagge){
 
+  async showToast(message){
+    const toast = await this.toastController.create({
+
+      message:message,
+      duration:1000 
+    });
+    
+    toast.present();
 
   }
 
-  showError(error){
-
+  async showError(error){
+    const alert= await this.alertCtrl.create({
+      
+      message:error,
+      
+      buttons: ['dismiss']
+    });
+    await alert.present();
 
   }
 

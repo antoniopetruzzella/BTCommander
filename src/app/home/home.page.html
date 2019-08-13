@@ -1,13 +1,44 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>
-      Ionic Blank
+      BTCommander
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <div class="ion-padding">
-   
+   <button ion-button full (click)="listPairedDevices()">
+     <ion-icon name="refresh"></ion-icon>&nbsp;Aggiorna la lista dei Devices</button>
+     <ion-label>LISTA PAIRED</ion-label>
+   <ion-row>
+     <ion-col>
+       <ion-list name="list" radio-group *ngIf="listToggle">
+         <ion-item *ngFor="let i of listaPairedDevices; let j = index">
+           <ion-item>{{i.name}}</ion-item>
+           <button ion-button full (click)="selectDevice(listaPairedDevices[j])">CONNETTI</button>
+         </ion-item>
+
+       </ion-list>
+     </ion-col>
+   </ion-row> 
+   <ion-label>LISTA UNPAIRED</ion-label>
+   <ion-row>
+     <ion-col>
+       <ion-list name="list" radio-group *ngIf="listToggle">
+         <ion-item *ngFor="let i of listaUnPairedDevices; let j = index">
+           <ion-item>{{i.name}}</ion-item>
+           <button ion-button full (click)="selectDevice(listaUnPairedDevices[j])">CONNETTI</button>
+         </ion-item>
+
+       </ion-list>
+     </ion-col>
+   </ion-row>
+   <ion-row>
+     <ion-col>
+       <ion-input placeholder="inserisci il comando" [(ngModel)]="command"></ion-input>
+       <ion-button size="small" (click)="sendCommand(command)">INVIA</ion-button>
+     </ion-col>
+   </ion-row> 
   </div>
 </ion-content>
